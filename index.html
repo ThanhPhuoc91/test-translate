@@ -1,56 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dịch Trung - Việt (Pollinations.AI - GET)</title>
+    <title>Website Dịch Trung - Việt (Pollinations.AI - GET)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: sans-serif; }
-        #translated-text { border: 1px solid #ccc; padding: 20px; white-space: pre-wrap; width: 80%; max-width: 900px; margin: 20px auto; }
-        .container { text-align: center; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 960px; margin: 20px auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        #translated-text { margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 4px; background-color: #eee; white-space: pre-wrap; min-height: 100px; }
+        #translated-text:empty::before { content: "Kết quả dịch sẽ hiển thị ở đây..."; color: #777; font-style: italic; }
+        .error-message { color: red; margin-top: 10px; }
+        .instruction { text-align: center; margin-top: 20px; color: #555; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Dịch Trung - Việt (Pollinations.AI - GET)</h1>
-        <h2>Văn bản đã dịch:</h2>
+        <h1>Dịch Tiếng Trung sang Tiếng Việt</h1>
         <div id="translated-text">
-            Đang tải bản dịch...
-        </div>
+            </div>
+        <p id="error-message" class="error-message"></p>
+        <p class="instruction">Để dịch, hãy thêm '?text=[VĂN BẢN TRUNG QUỐC]' vào URL.</p>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const translatedTextElement = document.getElementById('translated-text');
-            const apiUrlBase = 'https://text.pollinations.ai/'; // Base URL của Pollinations.AI API
+            const errorMessageElement = document.getElementById('error-message');
+            const apiUrlBase = 'https://text.pollinations.ai/';
 
             // Lấy tham số 'text' từ URL
             const urlParams = new URLSearchParams(window.location.search);
             const chineseText = urlParams.get('text');
 
             if (!chineseText) {
-                translatedTextElement.textContent = "Vui lòng cung cấp văn bản tiếng Trung cần dịch bằng cách thêm tham số '?text=' vào URL.";
-                return; // Dừng nếu không có văn bản đầu vào
+                translatedTextElement.textContent = ""; // Để trống vùng dịch
+                errorMessageElement.textContent = "Chưa có văn bản nào được cung cấp để dịch.";
+                return; // Dừng lại nếu không có văn bản đầu vào
             }
 
-            const encodedChineseText = encodeURIComponent(chineseText); // URL encode văn bản tiếng Trung
-            const apiUrl = `${apiUrlBase}${encodedChineseText}?model=openai&system=Dịch đoạn văn bản sau sang tiếng Việt:`; // Tạo URL API đầy đủ
+            translatedTextElement.textContent = "Đang dịch..."; // Hiển thị trạng thái dịch
 
-            fetch(apiUrl, { method: 'GET' }) // Sử dụng phương thức GET
+            const encodedChineseText = encodeURIComponent(chineseText);
+            const apiUrl = `${apiUrlBase}${encodedChineseText}?model=openai&system=Dịch đoạn văn bản sau sang tiếng Việt:`;
+
+            fetch(apiUrl, { method: 'GET' })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`Lỗi HTTP! trạng thái: ${response.status}`);
+                        throw new Error(`Lỗi HTTP! Trạng thái: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
                     if (data && data.response) {
                         translatedTextElement.textContent = data.response.trim();
+                        errorMessageElement.textContent = ""; // Xóa thông báo lỗi nếu dịch thành công
                     } else {
-                        translatedTextElement.textContent = "Không thể dịch. Phản hồi không hợp lệ từ API.";
+                        translatedTextElement.textContent = ""; // Để trống vùng dịch
+                        errorMessageElement.textContent = "Lỗi: Không thể nhận được kết quả dịch hợp lệ từ API.";
                     }
                 })
                 .catch(error => {
-                    console.error("Lỗi khi gọi Pollinations.AI API:", error);
-                    translatedTextElement.textContent = "Lỗi dịch thuật. Vui lòng thử lại sau.";
+                    console.error("Lỗi Fetch API:", error);
+                    translatedTextElement.textContent = ""; // Để trống vùng dịch
+                    errorMessageElement.textContent = "Lỗi: Kết nối đến dịch vụ dịch thuật thất bại. Vui lòng thử lại sau.";
                 });
         });
     </script>
