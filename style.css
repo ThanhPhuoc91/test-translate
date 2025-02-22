@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+    min-height: 150px;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.translation-result {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    background-color: #eee;
+}
+
+.translation-result h2 {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: #555;
+}
+
+#vietnamese-text {
+    white-space: pre-wrap; /* Để giữ định dạng dòng và khoảng trắng */
+    font-size: 16px;
+    margin: 0;
+}
+
+#vietnamese-text:empty::before {
+    content: "Bản dịch sẽ hiển thị ở đây sau khi bạn nhấn nút 'Dịch sang Tiếng Việt'.";
+    color: #777;
+    font-style: italic;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+}
