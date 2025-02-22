@@ -1,60 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dịch Trung - Việt (Pollinations.AI)</title>
+    <title>Dịch Trung - Việt (Pollinations.AI - GET)</title>
     <style>
         body { font-family: sans-serif; }
-        #input-text { width: 100%; height: 200px; margin-bottom: 10px; }
-        #translated-text { border: 1px solid #ccc; padding: 10px; white-space: pre-wrap; }
-        .container { width: 80%; max-width: 900px; margin: 0 auto; padding: 20px; }
+        #translated-text { border: 1px solid #ccc; padding: 20px; white-space: pre-wrap; width: 80%; max-width: 900px; margin: 20px auto; }
+        .container { text-align: center; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Dịch Trung - Việt (Pollinations.AI)</h1>
-
-        <textarea id="input-text" placeholder="Nhập văn bản tiếng Trung vào đây..."></textarea>
-        <button id="translate-button">Dịch sang tiếng Việt</button>
-
+        <h1>Dịch Trung - Việt (Pollinations.AI - GET)</h1>
         <h2>Văn bản đã dịch:</h2>
         <div id="translated-text">
-            </div>
+            Đang tải bản dịch...
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const inputTextElement = document.getElementById('input-text');
             const translatedTextElement = document.getElementById('translated-text');
-            const translateButton = document.getElementById('translate-button');
+            const apiUrlBase = 'https://text.pollinations.ai/'; // Base URL của Pollinations.AI API
 
-            const apiUrl = 'https://text.pollinations.ai/'; // Endpoint API của Pollinations.AI
+            // Lấy tham số 'text' từ URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const chineseText = urlParams.get('text');
 
-            translateButton.addEventListener('click', function() {
-                const chineseText = inputTextElement.value.trim();
-                if (!chineseText) {
-                    alert("Vui lòng nhập văn bản tiếng Trung để dịch.");
-                    return;
-                }
+            if (!chineseText) {
+                translatedTextElement.textContent = "Vui lòng cung cấp văn bản tiếng Trung cần dịch bằng cách thêm tham số '?text=' vào URL.";
+                return; // Dừng nếu không có văn bản đầu vào
+            }
 
-                translatedTextElement.textContent = "Đang dịch..."; // Hiển thị trạng thái
+            const encodedChineseText = encodeURIComponent(chineseText); // URL encode văn bản tiếng Trung
+            const apiUrl = `${apiUrlBase}${encodedChineseText}?model=openai&system=Dịch đoạn văn bản sau sang tiếng Việt:`; // Tạo URL API đầy đủ
 
-                const requestBody = JSON.stringify({
-                    messages: [
-                        {
-                            role: "user",
-                            content: `Dịch đoạn văn bản tiếng Trung sau sang tiếng Việt: "${chineseText}"`
-                        }
-                    ],
-                    model: 'openai' // Sử dụng model 'openai' cho dịch thuật, có thể thử 'mistral'
-                });
-
-                fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: requestBody
-                })
+            fetch(apiUrl, { method: 'GET' }) // Sử dụng phương thức GET
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`Lỗi HTTP! trạng thái: ${response.status}`);
@@ -72,15 +52,6 @@
                     console.error("Lỗi khi gọi Pollinations.AI API:", error);
                     translatedTextElement.textContent = "Lỗi dịch thuật. Vui lòng thử lại sau.";
                 });
-            });
-
-            // **Tự động dịch nếu có tham số 'text' trên URL (giống Baidu Translate)**
-            const urlParams = new URLSearchParams(window.location.search);
-            const textFromUrl = urlParams.get('text');
-            if (textFromUrl) {
-                inputTextElement.value = decodeURIComponent(textFromUrl); // Giải mã URL encoded text
-                translateButton.click(); // Tự động kích hoạt dịch
-            }
         });
     </script>
 </body>
